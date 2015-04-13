@@ -1,5 +1,6 @@
 from sklearn.linear_model import Perceptron, LinearRegression
 from lms import LMS
+from scipy import stats
 
 
 class classifier(object):
@@ -22,6 +23,9 @@ class classifier(object):
             self.clf.fit(self.data, self.target)
 
     def coef(self):
+        """
+        Return the coefficient of the trained model
+        """
         if self.method == "perceptron":
             return self.clf.coef_
         elif self.method == "linear_model":
@@ -32,6 +36,9 @@ class classifier(object):
             return "Non-classifier"
 
     def predict(self):
+        """
+        Return the prediction result of the data
+        """
         if self.method == "perceptron":
             return self.clf.predict(self.data)
         elif self.method == "linear_model":
@@ -42,4 +49,13 @@ class classifier(object):
             return "Non-classifier"
 
     def score(self):
-        return self.clf.score(self.data, self.target)
+        """
+        Return the coefficient of determination of the prediction result
+        """
+        if self.method == "perceptron":
+            pred = self.predict()
+            slope, intercept, r_value, p_value, std_err =\
+                stats.linregress(pred, self.target)
+            return r_value**2
+        else:
+            return self.clf.score(self.data, self.target)

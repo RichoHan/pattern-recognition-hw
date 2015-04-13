@@ -6,12 +6,15 @@ class LMS(object):
     """
     A classifier using Least Mean Square algorithm
     """
-    def __init__(self, eta=0.1, iterations=100):
+    def __init__(self, eta=0.1, iterations=1000):
         super(LMS, self).__init__()
         self.eta = eta
         self.iterations = iterations
 
     def fit(self, data, target):
+        """
+        Fit the model with the input data
+        """
         self.data = data
         self.target = target
         X = data
@@ -26,29 +29,21 @@ class LMS(object):
             error = Y[next] - predict
             w = w + self.eta*error*X[next]
         self.coef_ = w
-        self.direction(data, target)
-
-    def direction(self, data, target):
-        self.up, self.down = 1, 2
-        pred = self.predict(data)
-        if float((target != pred).sum())/float(target.shape[0]) > 0.5:
-            self.up, self.down = self.down, self.up
 
     def predict(self, data):
-        # target = np.array([])
-        # foo = lambda x: (
-        #     # np.dot(x, self.coef_)
-        #     x[0]*self.coef_[0] + self.coef_[1]
-        # )
-        # for x in data:
-        #     target = np.concatenate((target, np.array([foo(x)])))
+        """
+        Return the prediction result of the data
+        """
         x, y = data.T
         polynomial = np.poly1d(self.coef_)
         target = polynomial(x)
         return target
 
     def score(self, data, target):
+        """
+        Return the coefficient of determination of the prediction result
+        """
         pred = self.predict(data)
         slope, intercept, r_value, p_value, std_err =\
             stats.linregress(pred, target)
-        return abs(r_value)
+        return r_value**2
